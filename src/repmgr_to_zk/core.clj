@@ -3,9 +3,13 @@
             [refactor-nrepl.middleware :as refactor-nrepl]
             [clojure.tools.nrepl.server :as nrepl]
             [repmgr-to-zk.util :as util]
+            [repmgr-to-zk.repmgr :as repmgr]
+            [repmgr-to-zk.zk :as zk]
             [clojure.tools.logging :as log]))
 
-(defonce thread-pool nil)
+(defonce instance
+  {:thread-pool nil
+   :zk-client nil})
 
 (defn- start-nrepl! []
   (let [port 18001]
@@ -15,12 +19,12 @@
     (log/info "Started nREPL server on port" port)))
 
 (defn publish-status []
-  (log/info "Publishing status"))
+  (zk/set-master (:zk-client instance) (repmgr/master)))
 
 (defn stop! []
   (log/info "stopping!")
-  (when thread-pool
-    (util/stop-tp thread-pool)))
+  (when (:thread-pool instance)
+    (util/stop-tp (:thread-pool instance))))
 
 (defn add-shutdown-hook []
   (let [shutdown-hook (Thread. stop!)
@@ -28,9 +32,10 @@
     (.addShutdownHook runtime shutdown-hook)))
 
 (defn start! []
-  (alter-var-root #'thread-pool
+  (alter-var-root #'instance
                   (constantly
-                   (util/create-scheduled-tp publish-status 1000)))
+                   {:thread-pool (util/create-scheduled-tp publish-status 1000)
+                    :zk-client (zk/get-client)}))
   (start-nrepl!)
   (add-shutdown-hook)
   (log/info "initialized!")

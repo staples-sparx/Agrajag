@@ -1,0 +1,6 @@
+{:repmgr {:user "repmgr"
+          :password "repmgr"
+          :port "5555"
+          :suffix "dev"}
+ :zookeeper {:connect "127.0.0.1:2182"
+             :master-path "/eccentrica-db/master-ip"}}
