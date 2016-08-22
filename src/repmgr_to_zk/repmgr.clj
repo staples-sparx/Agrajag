@@ -22,6 +22,7 @@
                       suffix)]
     (j/query db query)))
 
+;; TODO: this is not correct. we should be shelling out to repmgr cluster show --csv.
 (defn master []
   (let [cluster-status (read-cluster-status)]
     (:name (first (filter #(= "master" (:type %)) cluster-status)))))
