@@ -26,8 +26,8 @@
     (when-not (some? version)
       (create client path))
     (when-not (= (get-master client path)
-                 master-ip))
-    (zk/set-data client
-                 path
-                 (zk-data/to-bytes master-ip)
-                 version)))
+                 master-ip)
+      (zk/set-data client
+                   path
+                   (zk-data/to-bytes master-ip)
+                   version))))
