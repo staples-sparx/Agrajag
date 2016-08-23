@@ -4,6 +4,9 @@
             [clojure.string :as s]
             [repmgr-to-zk.config :as config]))
 
+(defn close-client [client]
+  (zk/close client))
+
 (defn get-client []
   (zk/connect (config/lookup :zookeeper :connect)))
 

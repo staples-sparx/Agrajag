@@ -13,18 +13,22 @@
 
 (defn- start-nrepl! []
   (let [port 18001]
+    (log/info "Starting nREPL server on port" port)
     (nrepl/start-server
      :port port
-     :handler (-> cider/cider-nrepl-handler refactor-nrepl/wrap-refactor))
-    (log/info "Started nREPL server on port" port)))
+     :handler (-> cider/cider-nrepl-handler refactor-nrepl/wrap-refactor))))
 
 (defn publish-status []
+  (log/debug "Publishing status")
   (zk/set-master (:zk-client instance) (repmgr/master)))
 
 (defn stop! []
   (log/info "stopping!")
   (when (:thread-pool instance)
-    (util/stop-tp (:thread-pool instance))))
+    (util/stop-tp (:thread-pool instance)))
+  (zk/close-client (:zk-client instance))
+  (nrepl/stop-server (:nrepl-server instance))
+  nil)
 
 (defn add-shutdown-hook []
   (let [shutdown-hook (Thread. stop!)
@@ -35,8 +39,8 @@
   (alter-var-root #'instance
                   (constantly
                    {:thread-pool (util/create-scheduled-tp publish-status 1000)
-                    :zk-client (zk/get-client)}))
-  (start-nrepl!)
+                    :zk-client (zk/get-client)
+                    :nrepl-server (start-nrepl!)}))
   (add-shutdown-hook)
   (log/info "initialized!")
   (prn "initialized!")
