@@ -20,7 +20,11 @@
 
 (defn publish-status []
   (log/debug "Publishing status")
-  (zk/set-master (:zk-client instance) (repmgr/master)))
+  (try
+    (when-let [master-ip (repmgr/master)]
+      (zk/set-master (:zk-client instance) master-ip))
+    (catch Exception e
+      (log/error e "Unable to publish status."))))
 
 (defn stop! []
   (log/info "stopping!")
@@ -38,8 +42,8 @@
 (defn start! []
   (alter-var-root #'instance
                   (constantly
-                   {:thread-pool (util/create-scheduled-tp publish-status 1000)
-                    :zk-client (zk/get-client)
+                   {:zk-client (zk/get-client)
+                    :thread-pool (util/create-scheduled-tp publish-status 1000)
                     :nrepl-server (start-nrepl!)}))
   (add-shutdown-hook)
   (log/info "initialized!")

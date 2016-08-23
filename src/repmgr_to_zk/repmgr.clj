@@ -1,7 +1,9 @@
 (ns repmgr-to-zk.repmgr
   (:require [clojure.java.jdbc :as j]
             [clojure.string :as s]
-            [repmgr-to-zk.config :as config])
+            [clojure.tools.logging :as log]
+            [repmgr-to-zk.config :as config]
+            [clojure.java.shell :as shell])
   (:import [java.sql SQLException]))
 
 (def default-db-config
@@ -16,11 +18,14 @@
   (merge default-db-config (config/lookup :repmgr)))
 
 (defn read-cluster-status []
-  (let [suffix (config/lookup :repmgr :suffix)
-        query (format "SELECT conninfo, type, name, upstream_node_name, id
+  (try
+    (let [suffix (config/lookup :repmgr :suffix)
+          query (format "SELECT conninfo, type, name, upstream_node_name, id
                        FROM repmgr_%s.repl_show_nodes;"
-                      suffix)]
-    (j/query db query)))
+                        suffix)]
+      (j/query db query))
+    (catch SQLException e
+      (log/error e "Unable to connect to the DB."))))
 
 ;; TODO: this is not correct. we should be shelling out to repmgr cluster show --csv.
 (defn master []
