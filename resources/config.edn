@@ -1,3 +1,4 @@
-{:repmgr {:config-file "/apps/eccentrica/repmgr.conf"}
+{:frequency-ms 5000
+ :repmgr {:config-file "/apps/eccentrica/repmgr.conf"}
  :zookeeper {:connect "10.0.2.2:2182"
              :master-path "/eccentrica-db/master-ip"}}

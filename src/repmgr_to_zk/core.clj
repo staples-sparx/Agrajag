@@ -43,7 +43,7 @@
   (alter-var-root #'instance
                   (constantly
                    {:zk-client (zk/get-client)
-                    :thread-pool (util/create-scheduled-tp publish-status 1000)
+                    :thread-pool (util/create-scheduled-tp publish-status (config/lookup :frequency-ms))
                     :nrepl-server (start-nrepl!)}))
   (add-shutdown-hook)
   (log/info "initialized!")
