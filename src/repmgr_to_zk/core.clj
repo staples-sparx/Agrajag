@@ -21,8 +21,7 @@
 (defn publish-status []
   (log/debug "Publishing status")
   (try
-    (when-let [master-ip (repmgr/master)]
-      (zk/set-master (:zk-client instance) master-ip))
+    (zk/set-master (:zk-client instance) (repmgr/master))
     (catch Exception e
       (log/error e "Unable to publish status."))))
 

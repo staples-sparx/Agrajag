@@ -13,11 +13,15 @@
 
 (defn cluster-status []
   (let [config-file (config/lookup :repmgr :config-file)
-        cluster-show-output (:out (shell/sh "repmgr" "-f" config-file "cluster" "show"))]
-    (parse-output cluster-show-output)))
+        cluster-response (shell/sh "repmgr" "-f" config-file "cluster" "show")
+        exit-status (:exit cluster-response)]
+    (if (= 0 exit-status)
+      (parse-output (:out cluster-response))
+      (throw (ex-info "Failed to retrieve cluster status" cluster-response)))))
 
 (defn master []
-  (->> (cluster-status)
-       (filter #(= "master" (:role %)))
-       first
-       :name))
+  (let [nodes (cluster-status)
+        master-node (->> nodes (filter #(= "master" (:role %))) first)]
+    (if (some? master-node)
+      (:name master-node)
+      (throw (ex-info "No master node." nodes)))))
