@@ -11,7 +11,7 @@
   (zk/connect (config/lookup :zookeeper :connect)))
 
 (defn get-master [client path]
-  (zk-data/to-string (:data (zk/data client path))))
+  (some->> (zk/data client path) :data zk-data/to-string))
 
 (defn create [client path]
   (let [paths (->> (s/split path #"/")
