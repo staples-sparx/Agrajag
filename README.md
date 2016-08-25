@@ -12,6 +12,8 @@ The daemon runs on the DB nodes, polls repmgr for the current cluster status, an
 - To start this daemon, you could use `bin/svc start repmgr-to-zk`. Feel free to use an alternate way to start this daemon if you prefer.
 
 ### Configuration
+`repmgr-to-zk` reads its configuration from the `resources/config.edn` file. The sample configuration file `config.edn.sample` can be used as a reference.
+
 - `frequency-ms`: Interval of publishing cluster status to zookeeper in milliseconds.
 - `repmgr config-file`: Path to repmgr's config file.
 - `zookeer connect`: list of comma separated `host:port`s at which zookeepers are running.
