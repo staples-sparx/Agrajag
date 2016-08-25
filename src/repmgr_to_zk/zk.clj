@@ -1,8 +1,8 @@
 (ns repmgr-to-zk.zk
-  (:require [zookeeper :as zk]
-            [zookeeper.data :as zk-data]
-            [clojure.string :as s]
-            [repmgr-to-zk.config :as config]))
+  (:require [clojure.string :as s]
+            [repmgr-to-zk.config :as config]
+            [zookeeper :as zk]
+            [zookeeper.data :as zk-data]))
 
 (defn close-client [client]
   (zk/close client))

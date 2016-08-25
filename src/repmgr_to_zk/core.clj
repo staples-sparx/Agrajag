@@ -1,11 +1,12 @@
 (ns repmgr-to-zk.core
   (:require [cider.nrepl :as cider]
-            [refactor-nrepl.middleware :as refactor-nrepl]
+            [clojure.tools.logging :as log]
             [clojure.tools.nrepl.server :as nrepl]
-            [repmgr-to-zk.util :as util]
+            [refactor-nrepl.middleware :as refactor-nrepl]
+            [repmgr-to-zk.config :as config]
             [repmgr-to-zk.repmgr :as repmgr]
-            [repmgr-to-zk.zk :as zk]
-            [clojure.tools.logging :as log]))
+            [repmgr-to-zk.util :as util]
+            [repmgr-to-zk.zk :as zk]))
 
 (defonce instance
   {:thread-pool nil
