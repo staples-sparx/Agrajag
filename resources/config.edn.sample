@@ -1,0 +1,4 @@
+{:frequency-ms 5000
+ :repmgr {:config-file "/apps/my-awesome-app/repmgr.conf"}
+ :zookeeper {:connect "127.0.0.1:2182"
+             :master-path "/my-awesome-app-db/master-ip"}}
