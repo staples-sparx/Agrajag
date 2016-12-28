@@ -10,6 +10,9 @@
 (defn get-client []
   (zk/connect (config/lookup :zookeeper :connect)))
 
+(defn get-data [client path]
+  (zk/data client path))
+
 (defn create [client path]
   (let [paths (->> (s/split path #"/")
                    (reductions #(str %1 "/" %2))

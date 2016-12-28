@@ -54,7 +54,7 @@
   (start!))
 
 (comment
-  (let [client (zk/connect "127.0.0.1:2182" :watcher (fn [event] (println event)))
-        path "/eccentrica-db/master-ip"]
-    (set client path "33.33.33.33")
+  (let [ip "kafka-1-perf.staples.com:2181"
+        client (zk/connect ip :watcher (fn [event] (println event)))
+        path "/eccentrica-api-db/master-ip"]
     (get client path)))
