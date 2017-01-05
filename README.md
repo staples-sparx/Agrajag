@@ -1,6 +1,8 @@
-# repmgr-to-zk
+# Agrajag
 
-A daemon that sends repmgr's cluster status to zookeeper.
+> Agrajag is a creature which, by coincidence, has been killed by Arthur Dent hundreds, maybe thousands of times. He has been reincarnated on multiple occasions, but Arthur Dent is, either directly or indirectly, responsible for his death in some way in every single life he has ever lived. He is first seen notably as a bowl of petunias. At this moment all we know about him are his thoughts: "Oh no, not again". After which many people speculated that if we knew exactly why the bowl of petunias thought this, we would know a lot more of the nature of the Universe than we do now. The reason Agrajag said this is because he was killed by Arthur in many ways before. 
+
+# Daemon that sends repmgr's cluster status to zookeeper
 
 This decouples the DB cluster from the clients or applications. The applications only need to talk to zookeeper to find out the current master.
 
