@@ -1,4 +1,15 @@
 {:frequency-ms 5000
  :repmgr {:config-file "/apps/my-awesome-app/repmgr.conf"}
  :zookeeper {:connect "127.0.0.1:2182"
-             :master-path "/my-awesome-app-db/master-ip"}}
+             :master-path "/my-awesome-app-db/master-ip"}
+ :db-spec {:auto-commit true
+           :connection-timeout 1000
+           :validation-timeout 5000
+           :idle-timeout 600000
+           :max-lifetime 1800000
+           :minimum-idle 2
+           :maximum-pool-size 2
+           :adapter "postgresql"
+           :username "eccentrica"
+           :port-number 5442
+           :database-name "eccentrica_dev"}}

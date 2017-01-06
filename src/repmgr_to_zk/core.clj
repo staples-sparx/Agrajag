@@ -6,11 +6,11 @@
             [repmgr-to-zk.config :as config]
             [repmgr-to-zk.repmgr :as repmgr]
             [repmgr-to-zk.util :as util]
-            [repmgr-to-zk.zk :as zk]))
+            [repmgr-to-zk.zk :as zk]
+            [repmgr-to-zk.db :as db]))
 
 (defonce instance
-  {:thread-pool nil
-   :zk-client nil})
+  {:thread-pool nil :zk-client nil})
 
 (defn- start-nrepl! []
   (let [port 18001]
@@ -45,6 +45,7 @@
                    {:zk-client (zk/get-client)
                     :thread-pool (util/create-scheduled-tp publish-status (config/lookup :frequency-ms))
                     :nrepl-server (start-nrepl!)}))
+  (db/init!)
   (add-shutdown-hook)
   (log/info "initialized!")
   (prn "initialized!")

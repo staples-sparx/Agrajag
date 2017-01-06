@@ -5,6 +5,9 @@
             :url "http://mit-license.org/"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [zookeeper-clj "0.9.4"]]
+                 [zookeeper-clj "0.9.4"]
+                 [org.clojure/java.jdbc "0.7.0-alpha1"]
+                 [postgresql "9.3-1102.jdbc41"]
+                 [hikari-cp "1.7.5"]]
   :plugins [[cider/cider-nrepl "0.13.0"]
             [refactor-nrepl "2.2.0"]])

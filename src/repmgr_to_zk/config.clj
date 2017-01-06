@@ -5,14 +5,16 @@
 (defonce ^:private config-resource
   (-> "config.edn" io/resource))
 
-(defn read-config
+(defn- read-config
   ([] (read-config config-resource))
   ([config] (-> config slurp edn/read-string)))
 
 (defonce current (atom (read-config)))
 
+(defn reload! []
+  (reset! current (read-config)))
+
 (defn lookup [& ks]
   (get-in @current ks))
 
-(defn reload []
-  (reset! current (read-config)))
+;; (reload!)
