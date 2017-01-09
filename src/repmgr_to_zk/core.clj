@@ -19,13 +19,6 @@
      :port port
      :handler (-> cider/cider-nrepl-handler refactor-nrepl/wrap-refactor))))
 
-(defn publish-status []
-  (log/debug "Publishing status")
-  (try
-    (zk/set-master (:zk-client instance) (repmgr/master))
-    (catch Exception e
-      (log/error e "Unable to publish status."))))
-
 (defn stop! []
   (log/info "stopping!")
   (when (:thread-pool instance)

@@ -20,7 +20,7 @@
       (parse-output (:out cluster-response))
       (throw (ex-info "Failed to retrieve cluster status" cluster-response)))))
 
-(defn master []
+(defn latest-master []
   (let [nodes (cluster-status)
         master-node (->> nodes (filter #(= "master" (:role %))) first)]
     (if (some? master-node)
@@ -29,8 +29,15 @@
 
 (defn latest-promoted-standby []
   (let [event "SELECT node_id, event_timestamp
-               FROM repl_events
+               FROM repmgr_perf.repl_events
                WHERE event = 'standby_promote' AND successful = 't'
                ORDER BY event_timestamp DESC LIMIT 1;"]
     (db/with-read-only-connection conn
-      (db/q conn event))))
+      (first (db/q conn event)))))
+
+(defn node-by-id [^Integer id]
+  (let [event ["SELECT id, name
+               FROM repmgr_perf.repl_nodes
+               WHERE id = ?;" id]]
+    (db/with-read-only-connection conn
+      (first (db/q conn event)))))
