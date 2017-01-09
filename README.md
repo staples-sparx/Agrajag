@@ -18,7 +18,7 @@ The daemon runs on the DB nodes, polls repmgr for the current cluster status, an
 
 - `frequency-ms`: Interval of publishing cluster status to zookeeper in milliseconds.
 - `repmgr config-file`: Path to repmgr's config file.
-- `zookeer connect`: list of comma separated `host:port`s at which zookeepers are running.
+- `zookeeper connect`: list of comma separated `host:port`s at which zookeepers are running.
 - `zookeeper master-path`: path to the node that contains the ip/hostname of the master in the DB cluster.
 
 ## License
