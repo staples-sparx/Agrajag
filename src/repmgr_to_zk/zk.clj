@@ -4,11 +4,7 @@
             [zookeeper :as zk]
             [zookeeper.data :as zk-data]))
 
-(defn close-client [client]
-  (zk/close client))
-
-(defn get-client []
-  (zk/connect (config/lookup :zookeeper :connect)))
+(defonce client nil)
 
 (defn get-data [client path]
   (-> (zk/data client path)
@@ -16,7 +12,7 @@
       zk-data/to-string
       read-string))
 
-(defn create [client path]
+(defn create-path [client path]
   (let [paths (->> (s/split path #"/")
                    (reductions #(str %1 "/" %2))
                    (remove s/blank?))]
@@ -27,8 +23,16 @@
   (let [path (config/lookup :zookeeper :master-path)
         version (:version (zk/exists client path))]
     (when-not (some? version)
-      (create client path))
+      (create-path client path))
     (zk/set-data client
                  path
                  (zk-data/to-bytes (pr-str master-ip))
                  version)))
+
+(defn init! []
+  (alter-var-root #'client
+                  (constantly (zk/connect (config/lookup :zookeeper :connect)))))
+
+(defn destroy! []
+  (zk/close client)
+  (alter-var-root #'client nil))

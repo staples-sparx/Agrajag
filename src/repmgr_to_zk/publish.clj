@@ -1,7 +1,6 @@
 (ns repmgr-to-zk.publish
   (:require [clojure.tools.logging :as log]
             [repmgr-to-zk.config :as config]
-            [repmgr-to-zk.core :as core]
             [repmgr-to-zk.repmgr :as repmgr]
             [repmgr-to-zk.zk :as zk]))
 
@@ -29,7 +28,7 @@
       (assoc latest-promoted-standby :name latest-master))))
 
 (defn check-if-new [master-data]
-  (let [zk-client (:zk-client core/instance)
+  (let [zk-client zk/client
         zk-path (config/lookup :zookeeper :master-path)
         zk-data (zk/get-data zk-client zk-path)]
     (> (:event-timestamp master-data)
@@ -41,6 +40,6 @@
     (when (check-if-new master-data)
       (log/debug "Publishing new status")
       (try
-        (zk/set-master (:zk-client core/instance) master-data)
+        (zk/set-master zk/client master-data)
         (catch Exception e
           (log/error e "Unable to publish status."))))))
