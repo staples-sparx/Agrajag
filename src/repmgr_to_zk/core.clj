@@ -4,6 +4,7 @@
             [clojure.tools.nrepl.server :as nrepl]
             [refactor-nrepl.middleware :as refactor-nrepl]
             [repmgr-to-zk.config :as config]
+            [repmgr-to-zk.publish :as publish]
             [repmgr-to-zk.repmgr :as repmgr]
             [repmgr-to-zk.util :as util]
             [repmgr-to-zk.zk :as zk]
@@ -36,12 +37,11 @@
   (alter-var-root #'instance
                   (constantly
                    {:zk-client (zk/get-client)
-                    :thread-pool (util/create-scheduled-tp publish-status (config/lookup :frequency-ms))
+                    :thread-pool (util/create-scheduled-tp publish/status (config/lookup :frequency-ms))
                     :nrepl-server (start-nrepl!)}))
   (db/init!)
   (add-shutdown-hook)
   (log/info "initialized!")
-  (prn "initialized!")
   nil)
 
 (defn -main [& _]
