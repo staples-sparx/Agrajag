@@ -17,29 +17,25 @@
 ;; (1. publish)
 ;; (2. exit)
 
-(defn check-if-accurate []
+(defn- check-if-accurate []
   (let [latest-promoted-standby (repmgr/latest-promoted-standby)
         latest-master (repmgr/latest-master)]
-    (when  (= (-> latest-promoted-standby
-                  :node-id
-                  repmgr/node-by-id
-                  :name)
-              latest-master)
+    (when (= (-> latest-promoted-standby
+                 :node-id
+                 repmgr/node-by-id
+                 :name)
+             latest-master)
       (assoc latest-promoted-standby :name latest-master))))
 
-(defn check-if-new [master-data]
-  (let [zk-client zk/client
-        zk-path (config/lookup :zookeeper :master-path)
-        zk-data (zk/get-data zk-client zk-path)]
-    (> (:event-timestamp master-data)
-       (:event-timestamp zk-data))))
+(defn- check-if-new [master-data zk-data]
+  (>= (compare (:event-timestamp master-data)
+              (:event-timestamp zk-data))
+     0))
 
-(defn status []
+(defn check-and-update-status []
   (log/debug "Checking before publishing new status")
   (if-let [master-data (check-if-accurate)]
-    (when (check-if-new master-data)
-      (log/debug "Publishing new status")
-      (try
-        (zk/set-master zk/client master-data)
-        (catch Exception e
-          (log/error e "Unable to publish status."))))))
+    (try
+      (zk/set-data master-data (partial check-if-new master-data))
+      (catch Exception e
+        (log/error e "Unable to publish status.")))))

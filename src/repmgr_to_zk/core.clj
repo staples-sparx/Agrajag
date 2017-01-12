@@ -40,7 +40,7 @@
   (add-shutdown-hook)
   (alter-var-root #'instance
                   (constantly
-                   {:thread-pool (util/create-scheduled-tp publish/status (config/lookup :frequency-ms))
+                   {:thread-pool (util/create-scheduled-tp publish/check-and-update-status (config/lookup :frequency-ms))
                     :nrepl-server (start-nrepl!)}))
   (log/info "initialized!")
   nil)
