@@ -12,4 +12,16 @@
            :adapter "postgresql"
            :username "eccentrica"
            :port-number 5442
-           :database-name "eccentrica_dev"}}
+           :database-name "eccentrica_dev"}
+ :integrate-with-wonko? true
+ :kafka-client {"bootstrap.servers" "127.0.0.1:9092",
+                "reconnect.backoff.ms" 50,
+                "request.timeout.ms" 2,
+                "retry.backoff.ms" 10,
+                "linger.ms" 5,
+                "timeout.ms" "10",
+                "total.memory.bytes" (* 1024 1024 120),
+                "metadata.fetch.timeout.ms" 10,
+                "block.on.buffer.full" "false",
+                "queue.enqueue.timeout.ms" 0,
+                "compression.type" "gzip"}}

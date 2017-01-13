@@ -8,13 +8,8 @@
                  [zookeeper-clj "0.9.4"]
                  [org.clojure/java.jdbc "0.7.0-alpha1"]
                  [postgresql "9.3-1102.jdbc41"]
-                 [hikari-cp "1.7.5"]]
-  :jvm-opts ["-Dcom.sun.management.jmxremote"
-             "-Dcom.sun.management.jmxremote.ssl=false"
-             "-Dcom.sun.management.jmxremote.authenticate=false"
-             "-Dcom.sun.management.jmxremote.port=43210"
-             "-Xmx128m"
-             "-Xms128m"
-             "-server"]
+                 [hikari-cp "1.7.5"]
+                 [staples-sparx/wonko-client "0.1.7"]]
+  :jvm-opts ["-Xmx128m" "-Xms128m" "-server"]
   :plugins [[cider/cider-nrepl "0.13.0"]
             [refactor-nrepl "2.2.0"]])
