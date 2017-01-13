@@ -41,3 +41,17 @@
                WHERE id = ?;" id]]
     (db/with-read-only-connection conn
       (first (db/q conn event)))))
+
+(defn nodes-in-cluster []
+  (let [cluster (cluster-status)]
+    (->> cluster
+         (filter #(not= (:role %) "FAILED"))
+         (map #(:name %)))))
+
+#_(let [m {:master nil :failed [] :standby []}
+      el (first a)]
+  (condp = (:role a)
+    "master" (assoc m :master (:name el))
+    "standby" (update-in m [:standby] (concat (:name el)))
+    "FAILED" (update-in m [:failed] (concat (:name el))))
+  a)

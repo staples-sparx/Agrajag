@@ -19,18 +19,21 @@
 
 (defn- check-if-accurate []
   (let [latest-promoted-standby (repmgr/latest-promoted-standby)
-        latest-master (repmgr/latest-master)]
+        latest-master (repmgr/latest-master)
+        latest-cluster (repmgr/nodes-in-cluster)]
     (when (= (-> latest-promoted-standby
                  :node-id
                  repmgr/node-by-id
                  :name)
              latest-master)
-      (assoc latest-promoted-standby :name latest-master))))
+      (assoc latest-promoted-standby
+             :name latest-master
+             :cluster latest-cluster))))
 
 (defn- check-if-new [master-data zk-data]
   (>= (compare (:event-timestamp master-data)
-              (:event-timestamp zk-data))
-     0))
+               (:event-timestamp zk-data))
+      0))
 
 (defn check-and-update-status []
   (log/debug "Checking before publishing new status")

@@ -9,8 +9,16 @@
 
 (defonce ^{:private true} client nil)
 
-(def ^:private deserializer (fn [x] (read-string (zk-data/to-string x))))
-(def ^:private serializer (fn [x] (zk-data/to-bytes (pr-str x))))
+(defn- deserializer [data]
+  (-> data
+      zk-data/to-string
+      read-string))
+
+(defn- serializer [data]
+  (-> data
+      pr-str
+      zk-data/to-bytes))
+
 (def ^:const max-tries (or 3 (config/lookup :max-tries)))
 
 (defn init! []
@@ -29,8 +37,8 @@
                         (catch KeeperException$SessionExpiredException see ::reinit)
                         (catch KeeperException$ConnectionLossException cle ::reinit))]
         (condp = result
-          ::reinit (init!)
-          ::retry (recur (dec count))
+          ::reinit (do (init!)
+                       (recur (dec count)))
           result))
       (throw (Exception. "Failed to connect to Zookeeper")))))
 
@@ -42,7 +50,7 @@
              version (-> zk-data :stat :version)]
          (if (predicate? deserialized)
            (zk/set-data client path (serializer new-data) version)))
-       (catch KeeperException$BadVersionException bve ::retry)))
+       (catch KeeperException$BadVersionException bve)))
 
 (defn get-data [path]
   (retry (fn [client path]
