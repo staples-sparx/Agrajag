@@ -6,7 +6,6 @@
             [repmgr-to-zk.config :as config]
             [repmgr-to-zk.publish :as publish]
             [repmgr-to-zk.repmgr :as repmgr]
-            [repmgr-to-zk.monitoring :as monitoring]
             [repmgr-to-zk.util :as util]
             [repmgr-to-zk.zk :as zk]
             [repmgr-to-zk.db :as db]))
@@ -26,7 +25,6 @@
   (when (:thread-pool instance)
     (util/stop-tp (:thread-pool instance)))
   (zk/destroy!)
-  (db/destroy!)
   (nrepl/stop-server (:nrepl-server instance))
   nil)
 
@@ -37,8 +35,6 @@
 
 (defn start! []
   (zk/init!)
-  (db/init!)
-  (monitoring/init!)
   (add-shutdown-hook)
   (alter-var-root #'instance
                   (constantly

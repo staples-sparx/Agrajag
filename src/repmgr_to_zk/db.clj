@@ -1,28 +1,19 @@
 (ns repmgr-to-zk.db
-  (:require [hikari-cp.core :as hikari]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [clojure.java.jdbc :as jdbc]
             [repmgr-to-zk.config :as config]))
 
-(def ^:private connection-pool (atom nil))
-
-(defn init! []
-  (reset!
-   connection-pool
-   {:datasource (hikari/make-datasource (config/lookup :db-spec))}))
-
-(defn destroy! []
-  (-> @connection-pool
-      :datasource
-      (hikari/close-datasource))
-  (reset! connection-pool nil)
-  (log/info "Destroyed connection pool"))
-
-(defn get-connection [] @connection-pool)
+(def ^:private db-config (config/lookup :database))
+(def ^:private db-spec
+  {:classname "org.postgresql.Driver"
+   :subprotocol "postgresql"
+   :subname (str "//" (:host db-config) ":" (:port db-config)"/" (:name db-config))
+   :user (:username db-config)
+   :password (:password db-config)})
 
 (defmacro with-read-only-connection [conn & body]
   `(jdbc/with-db-connection
-     [~conn (get-connection) :read-only? true]
+     [~conn db-spec :read-only? true]
      ~@body))
 
 (defn- ->hyphens [^String x]

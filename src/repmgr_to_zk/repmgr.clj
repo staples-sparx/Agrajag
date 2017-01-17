@@ -47,11 +47,3 @@
     (->> cluster
          (filter #(not= (:role %) "FAILED"))
          (map #(:name %)))))
-
-#_(let [m {:master nil :failed [] :standby []}
-      el (first a)]
-  (condp = (:role a)
-    "master" (assoc m :master (:name el))
-    "standby" (update-in m [:standby] (concat (:name el)))
-    "FAILED" (update-in m [:failed] (concat (:name el))))
-  a)
