@@ -1,5 +1,9 @@
 (defproject repmgr-to-zk "0.1.0"
   :local-repo ".m2"
+  :repositories {"releases" {:url "s3p://runa-maven/releases/"
+                             :username [:gpg :env/archiva_username]
+                             :passphrase [:gpg :env/archiva_passphrase]}
+                 "nuition" "http://maven.nuiton.org/release"}
   :description "Send repmgr cluster information to zookeeper."
   :license {:name "MIT"
             :url "http://mit-license.org/"}
