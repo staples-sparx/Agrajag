@@ -74,7 +74,7 @@
   (let [path (config/lookup :zookeeper :master-path)
         version (:version (zk/exists client path))]
     (when-not (some? version)
-      (create-path client path))
+      (create-path path))
     (retry compare-and-set
            path
            predicate?
