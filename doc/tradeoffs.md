@@ -16,7 +16,7 @@
 * because it helps monitor the heartbeat of the current master much easier than a one-time hook
 * it's more reliable in terms of master consensus since multiple of these will be running on each box
 
-### why not run agrajag as a repmgr standXSby_promote hook?
+### why not run agrajag as a repmgr standby_promote hook?
 
 * because that will only run on the master box and if for some reason the call to agrajag fails, we're in trouble
 * a better alternative is to run it everywhere and use `cluster show` which will resolve the master for us and give us a better chance of writing the master
