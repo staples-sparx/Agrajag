@@ -1,5 +1,6 @@
 (ns repmgr-to-zk.monitoring
-  (:require [repmgr-to-zk.config :as config]
+  (:require [clojure.tools.logging :as log]
+            [repmgr-to-zk.config :as config]
             [wonko-client.collectors :as wc]
             [wonko-client.core :as wonko]))
 
@@ -9,4 +10,10 @@
                  (config/lookup :kafka-client)
                  :drop-on-reject? true)
     (wc/start-host-metrics)
-    (wc/start-ping)))
+    (wc/start-ping)
+    (log/info "Initialized monitoring!")))
+
+(defn destroy! []
+  (when (config/lookup :integrate-with-wonko?)
+    (wonko/terminate!)
+    (log/info "Stopped monitoring!")))

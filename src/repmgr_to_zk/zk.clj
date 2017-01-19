@@ -1,5 +1,6 @@
 (ns repmgr-to-zk.zk
   (:require [clojure.string :as s]
+            [clojure.tools.logging :as log]
             [repmgr-to-zk.config :as config]
             [zookeeper :as zk]
             [zookeeper.data :as zk-data])
@@ -23,11 +24,13 @@
 
 (defn init! []
   (alter-var-root #'client
-                  (constantly (zk/connect (config/lookup :zookeeper :connect)))))
+                  (constantly (zk/connect (config/lookup :zookeeper :connect))))
+  (log/info "Initialized zookeeper client!"))
 
 (defn destroy! []
   (zk/close client)
-  (alter-var-root #'client nil))
+  (alter-var-root #'client nil)
+  (log/info "Destroyed zookeeper client!"))
 
 (defn- retry
   [fn & args]

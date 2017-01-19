@@ -27,6 +27,7 @@
     (util/stop-tp (:thread-pool instance)))
   (zk/destroy!)
   (db/destroy!)
+  (monitoring/destroy!)
   (nrepl/stop-server (:nrepl-server instance))
   nil)
 
@@ -44,7 +45,7 @@
                   (constantly
                    {:thread-pool (util/create-scheduled-tp publish/check-and-update-status (config/lookup :frequency-ms))
                     :nrepl-server (start-nrepl!)}))
-  (log/info "initialized!")
+  (log/info "Initialized!")
   nil)
 
 (defn -main [& _]

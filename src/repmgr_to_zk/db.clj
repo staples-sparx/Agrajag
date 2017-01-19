@@ -9,14 +9,15 @@
 (defn init! []
   (reset!
    connection-pool
-   {:datasource (hikari/make-datasource (config/lookup :db-spec))}))
+   {:datasource (hikari/make-datasource (config/lookup :db-spec))})
+  (log/info "Initialized DB connection pool"))
 
 (defn destroy! []
   (-> @connection-pool
       :datasource
       (hikari/close-datasource))
   (reset! connection-pool nil)
-  (log/info "Destroyed connection pool"))
+  (log/info "Destroyed DB connection pool"))
 
 (defn get-connection [] @connection-pool)
 
