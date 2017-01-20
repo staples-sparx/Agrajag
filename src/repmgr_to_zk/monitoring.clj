@@ -1,6 +1,7 @@
 (ns repmgr-to-zk.monitoring
   (:require [clojure.tools.logging :as log]
             [repmgr-to-zk.config :as config]
+            [repmgr-to-zk.repmgr :as repmgr]
             [wonko-client.collectors :as wc]
             [wonko-client.core :as wonko]))
 
@@ -17,5 +18,17 @@
     (wonko/terminate!)
     (log/info "Stopped monitoring!")))
 
-(defn heartbeat []
+(defn- heartbeat []
   (wonko/counter :heartbeat {}))
+
+(defn- cluster-status []
+  (wonko/gauge :cluster-status [] (repmgr/nodes-in-cluster)))
+
+(defn- master-db []
+  (wonko/gauge :master-db [] (assoc (repmgr/latest-promoted-standby)
+                                    :name (repmgr/latest-master))))
+
+(defn metrics []
+  (heartbeat)
+  (cluster-status)
+  (master-db))

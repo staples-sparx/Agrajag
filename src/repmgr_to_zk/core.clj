@@ -48,7 +48,7 @@
   (alter-var-root #'instance
                   (constantly
                    {:publishing-tpool (util/create-scheduled-tp publish/check-and-update-status (config/lookup :frequency-ms))
-                    :monitoring-tpool (util/create-scheduled-tp monitoring/heartbeat (config/lookup :frequency-ms))
+                    :monitoring-tpool (util/create-scheduled-tp monitoring/metrics (config/lookup :frequency-ms))
                     :nrepl-server (start-nrepl!)}))
   (log/info "Initialized!")
   nil)
