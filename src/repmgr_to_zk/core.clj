@@ -12,7 +12,9 @@
             [repmgr-to-zk.db :as db]))
 
 (defonce instance
-  {:thread-pool nil})
+  {:publishing-tpool nil
+   :monitoring-tpool nil
+   :nrepl-server nil})
 
 (defn- start-nrepl! []
   (let [port 18001]
@@ -23,8 +25,10 @@
 
 (defn stop! []
   (log/info "stopping!")
-  (when (:thread-pool instance)
-    (util/stop-tp (:thread-pool instance)))
+  (when (:publishing-tpool instance)
+    (util/stop-tp (:publishing-tpool instance)))
+  (when (:monitoring-tpool instance)
+    (util/stop-tp (:monitoring-tpool instance)))
   (zk/destroy!)
   (db/destroy!)
   (monitoring/destroy!)
@@ -43,7 +47,8 @@
   (add-shutdown-hook)
   (alter-var-root #'instance
                   (constantly
-                   {:thread-pool (util/create-scheduled-tp publish/check-and-update-status (config/lookup :frequency-ms))
+                   {:publishing-tpool (util/create-scheduled-tp publish/check-and-update-status (config/lookup :frequency-ms))
+                    :monitoring-tpool (util/create-scheduled-tp monitoring/heartbeat (config/lookup :frequency-ms))
                     :nrepl-server (start-nrepl!)}))
   (log/info "Initialized!")
   nil)

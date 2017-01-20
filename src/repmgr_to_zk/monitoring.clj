@@ -10,10 +10,12 @@
                  (config/lookup :kafka-client)
                  :drop-on-reject? true)
     (wc/start-host-metrics)
-    (wc/start-ping)
     (log/info "Initialized monitoring!")))
 
 (defn destroy! []
   (when (config/lookup :integrate-with-wonko?)
     (wonko/terminate!)
     (log/info "Stopped monitoring!")))
+
+(defn heartbeat []
+  (wonko/counter :heartbeat {}))
