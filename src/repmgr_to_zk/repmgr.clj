@@ -46,15 +46,11 @@
       (first (db/q conn event)))))
 
 (defn nodes-in-cluster []
-  (let [cluster (cluster-status)]
-    (->> cluster
-         (filter #(not= (:role %) "FAILED"))
-         (map #(:name %)))))
-
-#_(let [m {:master nil :failed [] :standby []}
-      el (first a)]
-  (condp = (:role a)
-    "master" (assoc m :master (:name el))
-    "standby" (update-in m [:standby] (concat (:name el)))
-    "FAILED" (update-in m [:failed] (concat (:name el))))
-  a)
+  (let [cluster (cluster-status)
+        cluster-map-list (for [role ["master" "failed" "standby"]
+                               :let [cluster-map {}
+                                     filtered-cluster (filter #(= role (:role %)) cluster)]]
+                           (->> filtered-cluster
+                                (map #(dissoc % :role :upstream :connection-string))
+                                (assoc cluster-map (keyword role))))]
+    (apply merge cluster-map-list)))

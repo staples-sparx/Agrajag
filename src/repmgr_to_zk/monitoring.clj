@@ -21,9 +21,10 @@
 (defn- heartbeat []
   (wonko/counter :heartbeat {}))
 
-(defn cluster-status []
+(defn- cluster-status []
   (let [cluster (repmgr/nodes-in-cluster)]
-    (map #(wonko/counter :cluster-status {:hostname %}) cluster)))
+    (map #(wonko/counter :cluster-status {:hostname (-> % :name)})
+         (:standby cluster))))
 
 (defn- master-db []
   (let [master (repmgr/latest-master)]
