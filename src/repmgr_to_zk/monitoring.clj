@@ -21,14 +21,18 @@
 (defn- heartbeat []
   (wonko/counter :heartbeat {}))
 
-(defn- cluster-status []
-  (wonko/gauge :cluster-status [] (repmgr/nodes-in-cluster)))
+(defn cluster-status []
+  (let [cluster (repmgr/nodes-in-cluster)]
+    (map #(wonko/counter :cluster-status {:hostname %}) cluster)))
 
 (defn- master-db []
-  (wonko/gauge :master-db [] (assoc (repmgr/latest-promoted-standby)
-                                    :name (repmgr/latest-master))))
+  (let [master (repmgr/latest-master)]
+    (wonko/counter :master-db {:hostname master})))
 
 (defn metrics []
-  (heartbeat)
-  (cluster-status)
-  (master-db))
+  (try
+    (heartbeat)
+    (cluster-status)
+    (master-db)
+    (catch Exception e
+      (log/error e "Unable to publish metrics"))))
