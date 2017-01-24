@@ -16,7 +16,7 @@
 
 (defn cluster-status []
   (let [config-file (config/lookup :repmgr :config-file)
-        cluster-response (shell/sh "repmgr" "-f" config-file "cluster" "show")
+        cluster-response (shell/sh "repmgr" "-f" config-file "cluster" "show" "--log-to-file")
         exit-status (:exit cluster-response)]
     (if (= 0 exit-status)
       (parse-output (:out cluster-response))
