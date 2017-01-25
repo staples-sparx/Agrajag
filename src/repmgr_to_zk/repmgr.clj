@@ -47,10 +47,10 @@
 
 (defn nodes-in-cluster []
   (let [cluster (cluster-status)
-        cluster-map-list (for [role ["master" "failed" "standby"]
+        cluster-map-list (for [role ["master" "FAILED" "standby"]
                                :let [cluster-map {}
                                      filtered-cluster (filter #(= role (:role %)) cluster)]]
                            (->> filtered-cluster
                                 (map #(dissoc % :role :upstream :connection-string))
-                                (assoc cluster-map (keyword role))))]
+                                (assoc cluster-map (keyword (s/lower-case role)))))]
     (apply merge cluster-map-list)))
