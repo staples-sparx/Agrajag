@@ -45,24 +45,6 @@
           result))
       (throw (Exception. "Failed to connect to Zookeeper")))))
 
-(defn- compare-and-set
-  [client path predicate? new-data & args]
-  (try (let [zk-data (zk/data client path)
-             deserialized (when-let [bytes (:data zk-data)]
-                            (deserializer bytes))
-             version (-> zk-data :stat :version)]
-         (if (predicate? deserialized)
-           (zk/set-data client path (serializer new-data) version)))
-       (catch KeeperException$BadVersionException bve)))
-
-(defn get-data [path]
-  (retry (fn [client path]
-           (-> (zk/data client path)
-               :data
-               zk-data/to-string
-               read-string))
-         path))
-
 (defn create-path [path]
   (retry
    (fn [client path]
@@ -72,6 +54,22 @@
        (doseq [p paths]
          (zk/create client p :persistent? true))))
    path))
+
+(defn get-data [path]
+  (retry
+   (fn [client path]
+     (zk/data client path))
+   path))
+
+(defn- compare-and-set
+  [client path predicate? new-data & args]
+  (try (let [zk-data (get-data path)
+             deserialized (when-let [bytes (:data zk-data)]
+                            (deserializer bytes))
+             version (-> zk-data :stat :version)]
+         (if (predicate? deserialized)
+           (zk/set-data client path (serializer new-data) version)))
+       (catch KeeperException$BadVersionException bve)))
 
 (defn set-data [data predicate?]
   (let [path (config/lookup :zookeeper :master-path)
