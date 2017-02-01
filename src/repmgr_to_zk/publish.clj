@@ -37,8 +37,8 @@
 
 (defn check-and-update-status []
   (log/debug "Checking before publishing new status")
-  (if-let [master-data (check-if-accurate)]
-    (try
-      (zk/set-data master-data (partial check-if-new master-data))
-      (catch Exception e
-        (log/error e "Unable to publish status.")))))
+  (try
+    (when-let [master-data (check-if-accurate)]
+      (zk/set-data master-data (partial check-if-new master-data)))
+    (catch Exception e
+      (log/error e "Unable to publish status."))))
