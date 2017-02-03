@@ -24,15 +24,15 @@
 * it's also a better idea to keep the `standby_promote` / `follow_master` hook as simple as possible and have it work as little as possible
 * since `cluster_show` already gives you the current live picture of the cluster per node, it makes sense to just query it and write it to a central location (like ZK) from where you can later read
 
-## why not call zk directly from repmgr autofailover scripts?
+## why not call zk directly from repmgr automatic failover scripts?
 * we have some basic requirements for this script, it should at least do the following:
   * good monitoring and heartbeat functionality
   * being able to retry if it fails
   * handle I/O exceptions
   * boot-up fast (we don't want to waste time during this process)
-* most scripting languages like Python / Ruby will provide these functionalities, but we've chosen Clojure as a preferred language for this for the reasons mentioned in the question before, we do however understand that:
+* most scripting languages like Python / Ruby will provide these functionalities, but we've chosen Clojure as a preferred language for this for the reasons mentioned in a question above, we do however understand that:
   * the JVM is slow to boot up, it doesn't make sense for it to be a script
-  * it's also one of the reasons why agrajag is designed as a daemon / orchestrator rather than a script
+  * it's also one of the reasons why agrajag is designed as a daemon / orchestrator rather than a script other than the other benefits of keeping it as a daemon/service mentioned in the question above
 
 ### why not run agrajag after the repmgr master_register event?
 
