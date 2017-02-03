@@ -13,14 +13,26 @@
 
 ### why run agrajag as a daemon?
 
-* because it helps monitor the heartbeat of the current master much easier than a one-time hook
-* it's more reliable in terms of master consensus since multiple of these will be running on each box
+* because it helps monitor the heartbeat of the current master db much easier than a one-time hook
+* because it helps monitor the process's (the process that will eventually write to ZK or post to your application or PgBouncer or wherever) health continually than a one-off script failing to start the process at the time of the failover (due to any unknown underlying change) 
+* if zk (or anything other underlying dependencies) fails, you will be notified early
 
-### why not run agrajag as a repmgr standby_promote hook?
+## why not call application / db bouncer directly?
+* because if you have a lot of standbys, then your `standby_promote` / `follow_master` script becomes a complex graph of requests and retries
+* calling it directly will involve hitting each of your application nodes multiple times which is uncessary, instead we can just read from a clustered zk on a timely basis from the app side
+* if you call API endpoints, your app will have to manage cluster state
+* it's also a better idea to keep the `standby_promote` / `follow_master` hook as simple as possible and have it work as little as possible
+* since `cluster_show` already gives you the current live picture of the cluster per node, it makes sense to just query it and write it to a central location (like ZK) from where you can later read
 
-* because that will only run on the master box and if for some reason the call to agrajag fails, we're in trouble
-* a better alternative is to run it everywhere and use `cluster show` which will resolve the master for us and give us a better chance of writing the master
-* it's also a better idea to keep the standby_promote hook as simple as possible and have it work as little as possible
+## why not call zk directly from repmgr autofailover scripts?
+* we have some basic requirements for this script, it should at least do the following:
+  * good monitoring and heartbeat functionality
+  * being able to retry if it fails
+  * handle I/O exceptions
+  * boot-up fast (we don't want to waste time during this process)
+* most scripting languages like Python / Ruby will provide these functionalities, but we've chosen Clojure as a preferred language for this for the reasons mentioned in the question before, we do however understand that:
+  * the JVM is slow to boot up, it doesn't make sense for it to be a script
+  * it's also one of the reasons why agrajag is designed as a daemon / orchestrator rather than a script
 
 ### why not run agrajag after the repmgr master_register event?
 
