@@ -23,7 +23,7 @@ USAGE:
 
 
 WHERE <service> can be:
-    - repmgr-to-zk
+    - agrajag
 $1
 
 EOF
@@ -61,7 +61,7 @@ wait_for_server_to_die) ;;
 esac
 
 case ${SVC_NAME} in
-repmgr-to-zk)
+agrajag)
         ;;
 *) usage "ERROR: Unknown service '${SVC_NAME}'"; exit 1 ;;
 esac

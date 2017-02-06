@@ -1,4 +1,4 @@
-(ns repmgr-to-zk.config
+(ns agrajag.config
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]))
 

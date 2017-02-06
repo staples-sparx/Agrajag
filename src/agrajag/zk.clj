@@ -1,7 +1,7 @@
-(ns repmgr-to-zk.zk
+(ns agrajag.zk
   (:require [clojure.string :as s]
             [clojure.tools.logging :as log]
-            [repmgr-to-zk.config :as config]
+            [agrajag.config :as config]
             [zookeeper :as zk]
             [zookeeper.data :as zk-data])
   (:import (org.apache.zookeeper KeeperException$BadVersionException

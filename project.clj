@@ -1,4 +1,4 @@
-(defproject repmgr-to-zk "0.1.0"
+(defproject agrajag "0.1.0"
   :local-repo ".m2"
   :repositories {"releases" {:url "s3p://runa-maven/releases/"
                              :username [:gpg :env/archiva_username]

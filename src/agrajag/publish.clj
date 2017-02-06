@@ -1,8 +1,8 @@
-(ns repmgr-to-zk.publish
+(ns agrajag.publish
   (:require [clojure.tools.logging :as log]
-            [repmgr-to-zk.config :as config]
-            [repmgr-to-zk.repmgr :as repmgr]
-            [repmgr-to-zk.zk :as zk]))
+            [agrajag.config :as config]
+            [agrajag.repmgr :as repmgr]
+            [agrajag.zk :as zk]))
 
 ;; (def processes
 ;;   (-> check-if-accurate

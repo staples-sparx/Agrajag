@@ -1,7 +1,7 @@
-(ns repmgr-to-zk.monitoring
+(ns agrajag.monitoring
   (:require [clojure.tools.logging :as log]
-            [repmgr-to-zk.config :as config]
-            [repmgr-to-zk.repmgr :as repmgr]
+            [agrajag.config :as config]
+            [agrajag.repmgr :as repmgr]
             [wonko-client.collectors :as wc]
             [wonko-client.core :as wonko]))
 

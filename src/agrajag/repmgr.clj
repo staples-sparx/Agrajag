@@ -1,8 +1,8 @@
-(ns repmgr-to-zk.repmgr
+(ns agrajag.repmgr
   (:require [clojure.java.shell :as shell]
             [clojure.string :as s]
-            [repmgr-to-zk.config :as config]
-            [repmgr-to-zk.db :as db]))
+            [agrajag.config :as config]
+            [agrajag.db :as db]))
 
 (def repmgr-env (str "repmgr_" (config/lookup :env)))
 

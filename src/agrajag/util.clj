@@ -1,4 +1,4 @@
-(ns repmgr-to-zk.util
+(ns agrajag.util
   (:import [java.util.concurrent Executors ThreadPoolExecutor TimeUnit]))
 
 (defn create-scheduled-tp [f rate]

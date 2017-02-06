@@ -1,15 +1,15 @@
-(ns repmgr-to-zk.core
+(ns agrajag.core
   (:require [cider.nrepl :as cider]
             [clojure.tools.logging :as log]
             [clojure.tools.nrepl.server :as nrepl]
             [refactor-nrepl.middleware :as refactor-nrepl]
-            [repmgr-to-zk.config :as config]
-            [repmgr-to-zk.publish :as publish]
-            [repmgr-to-zk.repmgr :as repmgr]
-            [repmgr-to-zk.monitoring :as monitoring]
-            [repmgr-to-zk.util :as util]
-            [repmgr-to-zk.zk :as zk]
-            [repmgr-to-zk.db :as db]))
+            [agrajag.config :as config]
+            [agrajag.publish :as publish]
+            [agrajag.repmgr :as repmgr]
+            [agrajag.monitoring :as monitoring]
+            [agrajag.util :as util]
+            [agrajag.zk :as zk]
+            [agrajag.db :as db]))
 
 (defonce instance
   {:publishing-tpool nil

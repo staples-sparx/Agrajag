@@ -1,8 +1,8 @@
-(ns repmgr-to-zk.db
+(ns agrajag.db
   (:require [hikari-cp.core :as hikari]
             [clojure.tools.logging :as log]
             [clojure.java.jdbc :as jdbc]
-            [repmgr-to-zk.config :as config]))
+            [agrajag.config :as config]))
 
 (def ^:private connection-pool (atom nil))
 
