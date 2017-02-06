@@ -37,8 +37,12 @@
   (loop [count max-tries]
     (if (> count 0)
       (let [result (try (apply fn client args)
-                        (catch KeeperException$SessionExpiredException see ::reinit)
-                        (catch KeeperException$ConnectionLossException cle ::reinit))]
+                        (catch KeeperException$SessionExpiredException see
+                          (log/warn "ZK client failed with exception" see)
+                          ::reinit)
+                        (catch KeeperException$ConnectionLossException cle
+                          (log/warn "ZK client failed with exception" cle)
+                          ::reinit))]
         (condp = result
           ::reinit (do (init!)
                        (recur (dec count)))

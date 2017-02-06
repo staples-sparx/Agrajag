@@ -17,4 +17,5 @@
 (defn lookup [& ks]
   (get-in @current ks))
 
-;; (reload!)
+(defn integrate-with-wonko? []
+  (lookup :integrate-with-wonko?))

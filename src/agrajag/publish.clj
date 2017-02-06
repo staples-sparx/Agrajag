@@ -4,20 +4,7 @@
             [agrajag.repmgr :as repmgr]
             [agrajag.zk :as zk]))
 
-;; (def processes
-;;   (-> check-if-accurate
-;;       check-if-new))
-
-;; (check latest-master latest-promoted)
-;; (predicate)
-;; (1. retry)
-
-;; (2. read-zk)
-;; (predicate)
-;; (1. publish)
-;; (2. exit)
-
-(defn- check-if-accurate []
+(defn- latest-cluster-status []
   (let [latest-promoted-standby (repmgr/latest-promoted-standby)
         latest-master (repmgr/latest-master)
         latest-cluster (repmgr/nodes-in-cluster)]
@@ -30,15 +17,15 @@
              :name latest-master
              :cluster latest-cluster))))
 
-(defn- check-if-new [master-data zk-data]
+(defn- new-master? [master-data zk-data]
   (>= (compare (:event-timestamp master-data)
                (:event-timestamp zk-data))
       0))
 
-(defn check-and-update-status []
+(defn update []
   (log/debug "Checking before publishing new status")
   (try
-    (when-let [master-data (check-if-accurate)]
-      (zk/set-data master-data (partial check-if-new master-data)))
+    (when-let [master-data (latest-cluster-status)]
+      (zk/set-data master-data (partial new-master? master-data)))
     (catch Exception e
       (log/error e "Unable to publish status."))))

@@ -6,7 +6,7 @@
             [wonko-client.core :as wonko]))
 
 (defn init! []
-  (when (config/lookup :integrate-with-wonko?)
+  (when (config/integrate-with-wonko?)
     (wonko/init! "agrajag"
                  (config/lookup :kafka-client)
                  :drop-on-reject? true)
@@ -21,25 +21,15 @@
 (defn- heartbeat []
   (wonko/counter :heartbeat {}))
 
-(defn- standby-cluster []
+(defn- cluster-status-metrics []
   (let [cluster (repmgr/nodes-in-cluster)]
-    (doall (map #(wonko/counter :standby-cluster {:hostname (-> % :name)})
-                (:standby cluster)))))
-
-(defn- failed-cluster []
-  (let [cluster (repmgr/nodes-in-cluster)]
-    (doall (map #(wonko/counter :failed-cluster {:hostname (-> % :name)})
-                (:failed cluster)))))
-
-(defn- master-db []
-  (let [master (repmgr/latest-master)]
-    (wonko/counter :master-db {:hostname master})))
+    (for [type [:standby :failed :master]]
+      (map #(wonko/counter type {:hostname (-> % :name)})
+           (type cluster)))))
 
 (defn metrics []
   (try
     (heartbeat)
-    (standby-cluster)
-    (failed-cluster)
-    (master-db)
+    (cluster-status-metrics)
     (catch Exception e
       (log/error e "Unable to publish metrics"))))
