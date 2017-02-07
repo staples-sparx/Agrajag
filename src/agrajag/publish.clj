@@ -18,14 +18,30 @@
              :cluster latest-cluster))))
 
 (defn- new-master? [master-data zk-data]
-  (>= (compare (:event-timestamp master-data)
-               (:event-timestamp zk-data))
-      0))
+  (> (compare (:event-timestamp master-data)
+              (:event-timestamp zk-data))
+     0))
+
+(defn- cluster-change? [new-cluster zk-cluster]
+  (= new-cluster zk-cluster))
 
 (defn update []
   (log/debug "Checking before publishing new status")
   (try
-    (when-let [master-data (latest-cluster-status)]
-      (zk/set-data master-data (partial new-master? master-data)))
+    (when-let [cluster-data (latest-cluster-status)]
+      (let [master-data (dissoc cluster-data :cluster)
+            failed-data (-> cluster-data :cluster :failed)
+            standby-data (-> cluster-data :cluster :standby)]
+        ;; TODO
+        ;; The following calls to zk need to be in a transaction
+        (zk/set-data master-data
+                     (config/lookup :zookeeper :master-path)
+                     (partial new-master? master-data))
+        (zk/set-data failed-data
+                     (config/lookup :zookeeper :failed-path)
+                     (partial cluster-change? failed-data))
+        (zk/set-data standby-data
+                     (config/lookup :zookeeper :standby-path)
+                     (partial cluster-change? standby-data))))
     (catch Exception e
       (log/error e "Unable to publish status."))))

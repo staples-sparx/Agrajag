@@ -73,11 +73,11 @@
              version (-> zk-data :stat :version)]
          (if (predicate? deserialized)
            (zk/set-data client path (serializer new-data) version)))
-       (catch KeeperException$BadVersionException bve)))
+       (catch KeeperException$BadVersionException bve
+         (log/warn "Trying to do stale write" bve))))
 
-(defn set-data [data predicate?]
-  (let [path (config/lookup :zookeeper :master-path)
-        version (:version (zk/exists client path))]
+(defn set-data [data path predicate?]
+  (let [version (:version (zk/exists client path))]
     (when-not (some? version)
       (create-path path))
     (retry compare-and-set

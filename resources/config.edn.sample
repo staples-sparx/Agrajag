@@ -2,7 +2,9 @@
  :frequency-ms 5000
  :repmgr {:config-file "/apps/my-awesome-app/repmgr.conf"}
  :zookeeper {:connect "127.0.0.1:2182"
-             :master-path "/my-awesome-app-db/master-ip"}
+             :master-path "/eccentrica-db/master-node"
+             :standby-path "/eccentrica-db/standby-node"
+             :failed-path "/eccentrica-db/failed-node"}
  :db-spec {:auto-commit true
            :connection-timeout 1000
            :validation-timeout 5000
