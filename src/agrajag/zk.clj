@@ -71,7 +71,8 @@
              deserialized (when-let [bytes (:data zk-data)]
                             (deserializer bytes))
              version (-> zk-data :stat :version)]
-         (if (predicate? deserialized)
+         (when (predicate? deserialized)
+           (log/debug "Pubilshing data to zk for" path)
            (zk/set-data client path (serializer new-data) version)))
        (catch KeeperException$BadVersionException bve
          (log/warn "Trying to do stale write" bve))))
