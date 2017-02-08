@@ -18,12 +18,15 @@
              :cluster latest-cluster))))
 
 (defn- new-master? [master-data zk-data]
-  (> (compare (:event-timestamp master-data)
-              (:event-timestamp zk-data))
-     0))
+  (let [repmgr-ts (-> master-data :event-timestamp .getTime)
+        zk-ts (->  zk-data :event-timestamp .getTime)]
+    ;; We need this convertion to timestamp coz zk was dropping the nanosecond info while writing
+    (> (compare repmgr-ts
+                zk-ts)
+       0)))
 
 (defn- cluster-change? [new-cluster zk-cluster]
-  (= new-cluster zk-cluster))
+  (not= new-cluster zk-cluster))
 
 (defn update []
   (log/debug "Checking before publishing new status")
