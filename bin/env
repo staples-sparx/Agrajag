@@ -1,6 +1,6 @@
 #     -*- mode: sh -*-
 #
-# Repmgr-To-Zk app env settings
+# Agrajag app env settings
 #
 
 LEIN_CLASSPATH=$(cat ${SVC_ROOT}/bin/lein-classpath | sed "s/\${SVC_ROOT}/$(echo ${SVC_ROOT} | sed 's/\//\\\//g')/g")
@@ -10,7 +10,7 @@ JVM_TEST_CLASSPATH="${SVC_ROOT}/test"
 
 JVM_HEAP="64m"
 
-JVM_OPTS="-Dfile.encoding=UTF8 -Xms${JVM_HEAP} -Xmx${JVM_HEAP} -Dsun.net.client.defaultConnectTimeout=120000 -Dsun.net.client.defaultReadTimeout=120000 -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSParallelRemarkEnabled -XX:MaxGCPauseMillis=5 -XX:+OptimizeStringConcat -XX:+UseCompressedOops -XX:+AggressiveOpts -XX:MaxInlineSize=100 -Xloggc:/var/log/repmgr-to-zk/gc.log -verbose:gc -XX:+PrintGCDetails -XX:ErrorFile=/var/log/repmgr-to-zk/jvm-fatal%p.log -Dhttps.protocols=SSLv3 ${PROFILER_LIB} -agentlib:jdwp=transport=dt_socket,server=y,suspend=n -XX:NewSize=50m -XX:MaxNewSize=50m"
+JVM_OPTS="-Dfile.encoding=UTF8 -Xms${JVM_HEAP} -Xmx${JVM_HEAP} -Dsun.net.client.defaultConnectTimeout=120000 -Dsun.net.client.defaultReadTimeout=120000 -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSParallelRemarkEnabled -XX:MaxGCPauseMillis=5 -XX:+OptimizeStringConcat -XX:+UseCompressedOops -XX:+AggressiveOpts -XX:MaxInlineSize=100 -Xloggc:/var/log/agrajag/gc.log -verbose:gc -XX:+PrintGCDetails -XX:ErrorFile=/var/log/agrajag/jvm-fatal%p.log -Dhttps.protocols=SSLv3 ${PROFILER_LIB} -agentlib:jdwp=transport=dt_socket,server=y,suspend=n -XX:NewSize=50m -XX:MaxNewSize=50m"
 
 JVM_DIAG_OPTS="-Djavax.net.debug=all -XX:+PrintTLAB -XX:+PrintGCApplicationStoppedTime -verbose:gc -XX:+PrintGCDetails -XX:+PrintCompilation"
 JVM_CLIENT_OPTS="-client ${JVM_OPTS}"

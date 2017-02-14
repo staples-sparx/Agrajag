@@ -11,10 +11,10 @@ The daemon runs on the DB nodes, polls repmgr for the current cluster status, an
 ## Usage
 
 - Start this daemon on each of the cluster's nodes that is running postgresql and repmgrd.
-- To start this daemon, you could use `bin/svc start repmgr-to-zk`. Feel free to use an alternate way to start this daemon if you prefer.
+- To start this daemon, you could use `bin/svc start agrajag`. Feel free to use an alternate way to start this daemon if you prefer.
 
 ### Configuration
-`repmgr-to-zk` reads its configuration from the `resources/config.edn` file. The sample configuration file `config.edn.sample` can be used as a reference.
+`agrajag` reads its configuration from the `resources/config.edn` file. The sample configuration file `config.edn.sample` can be used as a reference.
 
 - `frequency-ms`: Interval of publishing cluster status to zookeeper in milliseconds.
 - `repmgr config-file`: Path to repmgr's config file.

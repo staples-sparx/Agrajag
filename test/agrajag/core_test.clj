@@ -1,6 +1,6 @@
-(ns repmgr-to-zk.core-test
+(ns agrajag.core-test
   (:require [clojure.test :refer :all]
-            [repmgr-to-zk.core :refer :all]))
+            [agrajag.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."

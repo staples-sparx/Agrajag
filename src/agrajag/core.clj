@@ -1,16 +1,20 @@
-(ns repmgr-to-zk.core
+(ns agrajag.core
   (:require [cider.nrepl :as cider]
             [clojure.tools.logging :as log]
             [clojure.tools.nrepl.server :as nrepl]
             [refactor-nrepl.middleware :as refactor-nrepl]
-            [repmgr-to-zk.config :as config]
-            [repmgr-to-zk.repmgr :as repmgr]
-            [repmgr-to-zk.util :as util]
-            [repmgr-to-zk.zk :as zk]
-            [repmgr-to-zk.db :as db]))
+            [agrajag.config :as config]
+            [agrajag.publish :as publish]
+            [agrajag.repmgr :as repmgr]
+            [agrajag.monitoring :as monitoring]
+            [agrajag.util :as util]
+            [agrajag.zk :as zk]
+            [agrajag.db :as db]))
 
 (defonce instance
-  {:thread-pool nil :zk-client nil})
+  {:publishing-tpool nil
+   :monitoring-tpool nil
+   :nrepl-server nil})
 
 (defn- start-nrepl! []
   (let [port 18001]
@@ -19,18 +23,15 @@
      :port port
      :handler (-> cider/cider-nrepl-handler refactor-nrepl/wrap-refactor))))
 
-(defn publish-status []
-  (log/debug "Publishing status")
-  (try
-    (zk/set-master (:zk-client instance) (repmgr/master))
-    (catch Exception e
-      (log/error e "Unable to publish status."))))
-
 (defn stop! []
   (log/info "stopping!")
-  (when (:thread-pool instance)
-    (util/stop-tp (:thread-pool instance)))
-  (zk/close-client (:zk-client instance))
+  (when (:publishing-tpool instance)
+    (util/stop-tp (:publishing-tpool instance)))
+  (when (:monitoring-tpool instance)
+    (util/stop-tp (:monitoring-tpool instance)))
+  (zk/destroy!)
+  (db/destroy!)
+  (monitoring/destroy!)
   (nrepl/stop-server (:nrepl-server instance))
   nil)
 
@@ -40,15 +41,16 @@
     (.addShutdownHook runtime shutdown-hook)))
 
 (defn start! []
+  (zk/init!)
+  (db/init!)
+  (monitoring/init!)
+  (add-shutdown-hook)
   (alter-var-root #'instance
                   (constantly
-                   {:zk-client (zk/get-client)
-                    :thread-pool (util/create-scheduled-tp publish-status (config/lookup :frequency-ms))
+                   {:publishing-tpool (util/create-scheduled-tp publish/update (config/lookup :frequency-ms))
+                    :monitoring-tpool (util/create-scheduled-tp monitoring/metrics (config/lookup :frequency-ms))
                     :nrepl-server (start-nrepl!)}))
-  (db/init!)
-  (add-shutdown-hook)
-  (log/info "initialized!")
-  (prn "initialized!")
+  (log/info "Initialized!")
   nil)
 
 (defn -main [& _]

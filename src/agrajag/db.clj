@@ -1,22 +1,23 @@
-(ns repmgr-to-zk.db
+(ns agrajag.db
   (:require [hikari-cp.core :as hikari]
             [clojure.tools.logging :as log]
             [clojure.java.jdbc :as jdbc]
-            [repmgr-to-zk.config :as config]))
+            [agrajag.config :as config]))
 
 (def ^:private connection-pool (atom nil))
 
 (defn init! []
   (reset!
    connection-pool
-   {:datasource (hikari/make-datasource (config/lookup :db-spec))}))
+   {:datasource (hikari/make-datasource (config/lookup :db-spec))})
+  (log/info "Initialized DB connection pool"))
 
 (defn destroy! []
   (-> @connection-pool
       :datasource
       (hikari/close-datasource))
   (reset! connection-pool nil)
-  (log/info "Destroyed connection pool"))
+  (log/info "Destroyed DB connection pool"))
 
 (defn get-connection [] @connection-pool)
 

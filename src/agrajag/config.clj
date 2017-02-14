@@ -1,4 +1,4 @@
-(ns repmgr-to-zk.config
+(ns agrajag.config
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]))
 
@@ -17,4 +17,5 @@
 (defn lookup [& ks]
   (get-in @current ks))
 
-;; (reload!)
+(defn integrate-with-wonko? []
+  (lookup :integrate-with-wonko?))
